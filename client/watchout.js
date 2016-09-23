@@ -27,23 +27,30 @@ var randomPositions = function(n) {
   return positions;
 };
 
+var update = function(n) {
+  var positionData = randomPositions(n);
 
+  var circles = svgContainer.selectAll('circle')
+                            .data(positionData);
 
-var positionData = randomPositions(20);
+  //Update
+  circles.transition().attr('cx', function(d) { return d.x; })
+         .attr('cy', function(d) { return d.y; });
 
-var circles = svgContainer.selectAll('circle')
-                          .data(positionData);
+  //Enter
+  circles.enter()
+         .append('circle')
+         .attr('cx', function(d) { return d.x; })
+         .attr('cy', function(d) { return d.y; })
+         .attr('r', function(d) { return r; });
 
-//Update
-circles.attr('cx', function(d) { return d.x; })
-       .attr('cy', function(d) { return d.y; });
+  //Exit
+  circles.exit().remove();
+};
 
-//Enter
-circles.enter()
-       .append('circle')
-       .attr('cx', function(d) { return d.x; })
-       .attr('cy', function(d) { return d.y; })
-       .attr('r', function(d) { return r; });
+update(20);
 
-//Exit
-circles.exit().remove();
+d3.interval(function() {
+  var n = 10 + 30 * Math.random();
+  update(n);
+}, 2000);
