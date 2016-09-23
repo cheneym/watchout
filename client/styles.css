@@ -7,5 +7,9 @@ svg {
 }
 
 circle {
-  background-color: blue;
+  fill: blue;
+}
+
+rect {
+  fill: red;
 }

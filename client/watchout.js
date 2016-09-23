@@ -48,9 +48,25 @@ var update = function(n) {
   circles.exit().remove();
 };
 
+var drag = d3.drag().on('drag', function(d) { 
+  d3.select(this).attr('x', d3.event.x)
+                 .attr('y', d3.event.y); 
+});
+
+var spawnPlayer = function() {
+  var player = svgContainer.append('rect')
+                           .attr('x', 10)
+                           .attr('y', 10)
+                           .attr('width', 20)
+                           .attr('height', 20)
+                           .call(drag);
+};
+
+spawnPlayer();
 update(20);
 
 d3.interval(function() {
   var n = 10 + 30 * Math.random();
   update(n);
 }, 2000);
+
