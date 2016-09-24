@@ -1,17 +1,23 @@
 // start slingin' some d3 here.
 
 var body = d3.select('body');
-
 var svgHeight = 500;
 var svgWidth = 960;
+var n = 20;
+var r = 15;
+var timeDelay = 2000;
+var highScore = 0;
+var currScore = 0;
+var numCollisions = 0;
 
 var svgContainer = body.append('svg')
     .attr('width', svgWidth)
     .attr('height', svgHeight);
 
-
-
-var r = 20;
+var drag = d3.drag().on('drag', function() {
+  d3.select(this).attr('cx', d3.event.x)
+                 .attr('cy', d3.event.y); 
+});
 
 var randomPositions = function(n) {
   var positions = [];
@@ -30,16 +36,18 @@ var randomPositions = function(n) {
 var update = function(n) {
   var positionData = randomPositions(n);
 
-  var circles = svgContainer.selectAll('circle')
+  var circles = svgContainer.selectAll('.enemy')
                             .data(positionData);
-
+  //console.log(circles);
+  var nodes = circles.data();
   //Update
-  circles.transition().attr('cx', function(d) { return d.x; })
+  circles.transition().duration(timeDelay).attr('cx', function(d) { return d.x; })
          .attr('cy', function(d) { return d.y; });
 
   //Enter
   circles.enter()
          .append('circle')
+         .attr('class', 'enemy')
          .attr('cx', function(d) { return d.x; })
          .attr('cy', function(d) { return d.y; })
          .attr('r', function(d) { return r; });
@@ -48,25 +56,52 @@ var update = function(n) {
   circles.exit().remove();
 };
 
-var drag = d3.drag().on('drag', function(d) { 
-  d3.select(this).attr('x', d3.event.x)
-                 .attr('y', d3.event.y); 
-});
-
 var spawnPlayer = function() {
-  var player = svgContainer.append('rect')
-                           .attr('x', 10)
-                           .attr('y', 10)
-                           .attr('width', 20)
-                           .attr('height', 20)
-                           .call(drag);
+  var player = svgContainer.append('circle');
+  player.attr('class', 'player')
+        .attr('cx', 10)
+        .attr('cy', 10)
+        .attr('r', r)
+        .call(drag);
+};
+
+var collide = function() {
+  var player = svgContainer.selectAll('.player');
+  var enemies = svgContainer.selectAll('.enemy');
+  var px = player.attr('cx');
+  var py = player.attr('cy');
+  var collided = false;
+  enemies.each(function(enemy, i) {
+    var d = Math.sqrt(Math.pow(d3.select(this).attr('cx') - px, 2) + Math.pow(d3.select(this).attr('cy') - py, 2));
+    if (d < 2 * r) {
+      collided = true;
+      numCollisions++;
+    }
+  });
+  return collided;
+};
+
+var scoreManager = function(collided) {
+  if (collided) {
+    if (currScore > highScore) {
+      highScore = currScore;
+    }
+    currScore = 0;
+  } else {
+    currScore++;
+  }
+  d3.select('.highscore').select('span').text(highScore);
+  d3.select('.current').select('span').text(currScore);
+  d3.select('.collisions').select('span').text(numCollisions);  
 };
 
 spawnPlayer();
-update(20);
+update(n);
+update(n);
+d3.interval(function() {
+  update(n);
+}, timeDelay);
 
 d3.interval(function() {
-  var n = 10 + 30 * Math.random();
-  update(n);
-}, 2000);
-
+  scoreManager(collide());
+}, timeDelay / 10);
