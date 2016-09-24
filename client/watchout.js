@@ -9,6 +9,7 @@ var timeDelay = 2000;
 var highScore = 0;
 var currScore = 0;
 var numCollisions = 0;
+var collisionFlag = false;
 
 var svgContainer = body.append('svg')
     .attr('width', svgWidth)
@@ -75,7 +76,6 @@ var collide = function() {
     var d = Math.sqrt(Math.pow(d3.select(this).attr('cx') - px, 2) + Math.pow(d3.select(this).attr('cy') - py, 2));
     if (d < 2 * r) {
       collided = true;
-      numCollisions++;
     }
   });
   return collided;
@@ -83,13 +83,13 @@ var collide = function() {
 
 var scoreManager = function(collided) {
   if (collided) {
-    if (currScore > highScore) {
-      highScore = currScore;
-    }
-    currScore = 0;
+    numCollisions = collisionFlag ? numCollisions : numCollisions + 1;
+    collisionFlag = true;
   } else {
-    currScore++;
+    collisionFlag = false;
   }
+  currScore = collided ? 0 : currScore + 1;
+  highScore = currScore > highScore ? currScore : highScore;
   d3.select('.highscore').select('span').text(highScore);
   d3.select('.current').select('span').text(currScore);
   d3.select('.collisions').select('span').text(numCollisions);  
