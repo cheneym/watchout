@@ -12,8 +12,21 @@ var numCollisions = 0;
 var collisionFlag = false;
 
 var svgContainer = body.append('svg')
-    .attr('width', svgWidth)
-    .attr('height', svgHeight);
+  .attr('width', svgWidth)
+  .attr('height', svgHeight);
+
+var defsContainer = svgContainer.append('defs');
+var pattern1 = defsContainer.append('pattern')
+  .attr('id', 'asteroid')
+  //.attr('patternUnits', 'userSpaceOnUse')
+  .attr('width', 2 * r)
+  .attr('height', 2 * r);
+var img1 = pattern1.append('image')
+  .attr('xlink:href', 'asteroid.png')
+  .attr('x', '0')
+  .attr('y', '0')
+  .attr('width', 2 * r)
+  .attr('height', 2 * r);
 
 var drag = d3.drag().on('drag', function() {
   //var ox = d3.select(this).attr('cx') - d3.event.x;

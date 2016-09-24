@@ -5,9 +5,24 @@ Feel free to use it if you like. */
 svg {
   background-color: white;
 }
+
+
+@keyframes spin { 
+  from { 
+    transform: rotate(0deg); 
+  } to { 
+    transform: rotate(360deg); 
+  }
+}
+
 .enemy {
-  fill: black;
+  fill: url(#asteroid);
 }
 .player {
   fill: red;
+  /*
+  animation-name: spin;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;*/
 }
