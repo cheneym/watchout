@@ -16,6 +16,8 @@ var svgContainer = body.append('svg')
     .attr('height', svgHeight);
 
 var drag = d3.drag().on('drag', function() {
+  //var ox = d3.select(this).attr('cx') - d3.event.x;
+  //var oy = d3.select(this).attr('cy') - d3.event.y;
   d3.select(this).attr('cx', d3.event.x)
                  .attr('cy', d3.event.y); 
 });
@@ -72,9 +74,15 @@ var collide = function() {
   var px = player.attr('cx');
   var py = player.attr('cy');
   var collided = false;
+  var ex, ey, dx, dy, d2;
+
   enemies.each(function(enemy, i) {
-    var d = Math.sqrt(Math.pow(d3.select(this).attr('cx') - px, 2) + Math.pow(d3.select(this).attr('cy') - py, 2));
-    if (d < 2 * r) {
+    ex = d3.select(this).attr('cx');
+    ey = d3.select(this).attr('cy');
+    dx = ex - px;
+    dy = ey - py;
+    d2 = dx * dx + dy * dy;
+    if (d2 < 4 * r * r) {
       collided = true;
     }
   });
