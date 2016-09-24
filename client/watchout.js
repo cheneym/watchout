@@ -1,6 +1,4 @@
 // start slingin' some d3 here.
-
-var body = d3.select('body');
 var svgHeight = 500;
 var svgWidth = 960;
 var n = 20;
@@ -11,28 +9,34 @@ var currScore = 0;
 var numCollisions = 0;
 var collisionFlag = false;
 
+var body = d3.select('body');
+
 var svgContainer = body.append('svg')
   .attr('width', svgWidth)
   .attr('height', svgHeight);
 
 var defsContainer = svgContainer.append('defs');
+
 var pattern1 = defsContainer.append('pattern')
-  .attr('id', 'asteroid')
-  //.attr('patternUnits', 'userSpaceOnUse')
+  .attr('id', 'shuriken')
+  //.attr('patternUnits', 'userSOnUse')
   .attr('width', 2 * r)
   .attr('height', 2 * r);
 var img1 = pattern1.append('image')
-  .attr('xlink:href', 'asteroid.png')
+  .attr('xlink:href', 'shuriken1.png')
   .attr('x', '0')
   .attr('y', '0')
   .attr('width', 2 * r)
   .attr('height', 2 * r);
 
 var drag = d3.drag().on('drag', function() {
-  //var ox = d3.select(this).attr('cx') - d3.event.x;
-  //var oy = d3.select(this).attr('cy') - d3.event.y;
-  d3.select(this).attr('cx', d3.event.x)
-                 .attr('cy', d3.event.y); 
+  var xLimit = svgWidth - r;
+  var yLimit = svgHeight - r;
+  var newX = (d3.event.x > xLimit) ? xLimit : ((d3.event.x < r) ? r : d3.event.x);
+  var newY = (d3.event.y > yLimit) ? yLimit : ((d3.event.y < r) ? r : d3.event.y);
+
+  d3.select(this).attr('cx', newX)
+                 .attr('cy', newY); 
 });
 
 var randomPositions = function(n) {
@@ -75,8 +79,8 @@ var update = function(n) {
 var spawnPlayer = function() {
   var player = svgContainer.append('circle');
   player.attr('class', 'player')
-        .attr('cx', 10)
-        .attr('cy', 10)
+        .attr('cx', r)
+        .attr('cy', r)
         .attr('r', r)
         .call(drag);
 };
@@ -95,9 +99,7 @@ var collide = function() {
     dx = ex - px;
     dy = ey - py;
     d2 = dx * dx + dy * dy;
-    if (d2 < 4 * r * r) {
-      collided = true;
-    }
+    collided = d2 < 4 * r * r ? true : collided;
   });
   return collided;
 };
@@ -125,4 +127,4 @@ d3.interval(function() {
 
 d3.interval(function() {
   scoreManager(collide());
-}, timeDelay / 10);
+}, 100);
